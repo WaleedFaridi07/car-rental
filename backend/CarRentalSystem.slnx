@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/CarRentalSystem.API/CarRentalSystem.API.csproj" />
+    <Project Path="src/CarRentalSystem.Application/CarRentalSystem.Application.csproj" />
+    <Project Path="src/CarRentalSystem.CrossCutting/CarRentalSystem.CrossCutting.csproj" />
+    <Project Path="src/CarRentalSystem.Domain/CarRentalSystem.Domain.csproj" />
+    <Project Path="src/CarRentalSystem.Infrastructure/CarRentalSystem.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CarRentalSystem.IntegrationTests/CarRentalSystem.IntegrationTests.csproj" />
+    <Project Path="tests\CarRentalSystem.UnitTests\CarRentalSystem.UnitTests.csproj" />
+  </Folder>
+</Solution>

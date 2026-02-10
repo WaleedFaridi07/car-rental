@@ -1,0 +1,52 @@
+# .gitignore for CarRentalSystem (dotnet, Rider, Docker)
+
+# Build results
+bin/
+obj/
+
+# Rider project files
+.idea/
+*.sln.DotSettings.user
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+**/data/
+**/tmp/
+
+# Test results
+TestResults/
+
+# Others
+*.vspscc
+*.vssscc
+_ReSharper*/
+
+# Python virtualenv (if any)
+venv/
+ENV/
+
+# Node modules (if any)
+node_modules/
+
+# Coverage
+coverage/
+*.coverage
+
+# SQL dumps
+*.sql
+
+# Ignore local settings
+src/**/appsettings.*.json
+!src/**/appsettings.json
