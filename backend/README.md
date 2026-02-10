@@ -34,9 +34,9 @@ CarRentalSystem/
 │   ├── CarRentalSystem.Domain/       # Entities & Interfaces
 │   └── CarRentalSystem.Infrastructure/ # Data Access & Repositories
 ├── tests/
-│   └── CarRentalSystem.Tests/        # Unit Tests
-├── frontend/                          # React TypeScript App
-└── docker-compose.yml                 # PostgreSQL Container
+│   ├── CarRentalSystem.UnitTests/    # Unit Tests
+│   └── CarRentalSystem.IntegrationTests/ # Integration Tests
+└── docker-compose.yml                # PostgreSQL Container
 ```
 
 ## Prerequisites
