@@ -13,7 +13,7 @@ The goal is to implement and verify core rental business rules (pickup/return + 
   - Calculate rental price based on car category rules
   - Persistence in **PostgreSQL**
   - Swagger/OpenAPI for easy exploration
-  - Unit + (optional) integration tests
+  - Unit + integration tests
 
 - **Frontend (React)**
   - Minimal UI to call backend endpoints
@@ -29,7 +29,7 @@ The goal is to implement and verify core rental business rules (pickup/return + 
 - ASP.NET Core Web API
 - EF Core + Npgsql (PostgreSQL provider)
 - xUnit (tests)
-- (Optional) Testcontainers for PostgreSQL integration tests
+- Testcontainers for PostgreSQL integration tests
 
 **Frontend**
 - React + TypeScript
