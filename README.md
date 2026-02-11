@@ -1,7 +1,3 @@
-Below is a ready-to-paste README.md for your repo. I wrote it to look “production-ish” while still being honest about what’s in a typical backend/ + frontend/ split (and aligned with your earlier spec: pickup/return + pricing rules + PostgreSQL + Docker + tests).
-
-You can copy/paste and tweak any names/ports to match your actual settings.
-
 # 🚗 Car Rental (React + .NET 10 + PostgreSQL)
 
 A small **car rental portal** with a minimal **React UI** and a **.NET 10 Web API** backend, backed by **PostgreSQL** (Docker).  
@@ -17,7 +13,7 @@ The goal is to implement and verify core rental business rules (pickup/return + 
   - Calculate rental price based on car category rules
   - Persistence in **PostgreSQL**
   - Swagger/OpenAPI for easy exploration
-  - Unit + (optional) integration tests
+  - Unit + integration tests
 
 - **Frontend (React)**
   - Minimal UI to call backend endpoints
@@ -33,7 +29,7 @@ The goal is to implement and verify core rental business rules (pickup/return + 
 - ASP.NET Core Web API
 - EF Core + Npgsql (PostgreSQL provider)
 - xUnit (tests)
-- (Optional) Testcontainers for PostgreSQL integration tests
+- Testcontainers for PostgreSQL integration tests
 
 **Frontend**
 - React + TypeScript
