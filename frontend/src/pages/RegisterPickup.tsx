@@ -145,7 +145,17 @@ export default function RegisterPickup() {
             </label>
             <input
               type="datetime-local"
-              {...register('pickupDateTime', { required: 'Pickup date/time is required' })}
+              {...register('pickupDateTime', { 
+                required: 'Pickup date/time is required',
+                validate: (value) => {
+                  const pickupDate = new Date(value)
+                  const now = new Date()
+                  if (pickupDate < now) {
+                    return 'Pickup date cannot be in the past'
+                  }
+                  return true
+                }
+              })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
             {errors.pickupDateTime && (

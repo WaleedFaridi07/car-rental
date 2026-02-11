@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { rentalApi } from '../api/client'
@@ -9,7 +9,16 @@ import type { ReturnRegistrationDto, RentalReturnResult } from '../types'
 export default function RegisterReturn() {
   const [searchParams] = useSearchParams()
   const [result, setResult] = useState<RentalReturnResult | null>(null)
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ReturnRegistrationDto>()
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ReturnRegistrationDto>()
+  
+  const bookingNumber = watch('bookingNumber')
+  
+  const { data: rentals } = useQuery({
+    queryKey: ['rentals'],
+    queryFn: rentalApi.getAllRentals,
+  })
+  
+  const currentRental = rentals?.find(r => r.bookingNumber === bookingNumber)
 
   useEffect(() => {
     const bookingNumber = searchParams.get('booking')
@@ -62,7 +71,18 @@ export default function RegisterReturn() {
             </label>
             <input
               type="datetime-local"
-              {...register('returnDateTime', { required: 'Return date/time is required' })}
+              {...register('returnDateTime', { 
+                required: 'Return date/time is required',
+                validate: (value) => {
+                  if (!currentRental?.pickupDateTime) return true
+                  const returnDate = new Date(value)
+                  const pickupDate = new Date(currentRental.pickupDateTime)
+                  if (returnDate < pickupDate) {
+                    return 'Return date cannot be earlier than pickup date'
+                  }
+                  return true
+                }
+              })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
             {errors.returnDateTime && (
@@ -80,7 +100,14 @@ export default function RegisterReturn() {
               {...register('returnMeterReading', { 
                 required: 'Meter reading is required',
                 valueAsNumber: true,
-                min: { value: 0, message: 'Must be positive' }
+                min: { value: 0, message: 'Must be positive' },
+                validate: (value) => {
+                  if (!currentRental?.pickupMeterReading) return true
+                  if (value < currentRental.pickupMeterReading) {
+                    return `Return meter reading must be greater than pickup reading (${currentRental.pickupMeterReading} km)`
+                  }
+                  return true
+                }
               })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="10200"
