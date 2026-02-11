@@ -1,7 +1,3 @@
-Below is a ready-to-paste README.md for your repo. I wrote it to look “production-ish” while still being honest about what’s in a typical backend/ + frontend/ split (and aligned with your earlier spec: pickup/return + pricing rules + PostgreSQL + Docker + tests).
-
-You can copy/paste and tweak any names/ports to match your actual settings.
-
 # 🚗 Car Rental (React + .NET 10 + PostgreSQL)
 
 A small **car rental portal** with a minimal **React UI** and a **.NET 10 Web API** backend, backed by **PostgreSQL** (Docker).  
