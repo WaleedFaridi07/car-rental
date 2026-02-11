@@ -1,3 +1,5 @@
+using CarRentalSystem.Domain.Strategies;
+
 namespace CarRentalSystem.Application.Strategies;
 
 public class TruckPricingStrategy : IPricingStrategy

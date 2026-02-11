@@ -1,5 +1,5 @@
 using CarRentalSystem.API.Controllers;
-using CarRentalSystem.Infrastructure.Data;
+using CarRentalSystem.Infrastructure;
 using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

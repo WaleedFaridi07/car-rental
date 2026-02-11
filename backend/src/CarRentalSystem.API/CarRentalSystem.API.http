@@ -1,6 +1,45 @@
-@CarRentalSystem.API_HostAddress = http://localhost:5225
+### Use environment file for variable substitution
+@env=CarRentalSystem
 
-GET {{CarRentalSystem.API_HostAddress}}/weatherforecast/
+### Get all car categories
+GET {{API_HostAddress}}/api/categories/
 Accept: application/json
 
 ###
+
+### Register a new pickup
+POST {{API_HostAddress}}/api/rentals/pickup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "bookingNumber": "BK202602110923438",
+  "registrationNumber": "RYY44J",
+  "customerSocialSecurityNumber": "19910219-6194",
+  "carCategoryId": 1,
+  "pickupDateTime": "2026-02-19T10:00:00Z",
+  "pickupMeterReading": 1000
+}
+
+### Register a return
+POST {{API_HostAddress}}/api/rentals/return
+Content-Type: application/json
+Accept: application/json
+
+{
+  "bookingNumber": "BK202602110923438",
+  "returnDateTime": "2026-02-25T10:00:00Z",
+  "returnMeterReading": 1100
+}
+
+### Get all rentals
+GET {{API_HostAddress}}/api/rentals/
+Accept: application/json
+
+### Get rental by booking number
+GET {{API_HostAddress}}/api/rentals/{bookingNumber}
+Accept: application/json
+
+### Generate booking number
+GET {{API_HostAddress}}/api/rentals/generate-booking-number
+Accept: application/json

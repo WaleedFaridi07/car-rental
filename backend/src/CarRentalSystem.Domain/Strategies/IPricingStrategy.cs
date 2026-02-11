@@ -1,4 +1,4 @@
-namespace CarRentalSystem.Application.Strategies;
+namespace CarRentalSystem.Domain.Strategies;
 
 public interface IPricingStrategy
 {

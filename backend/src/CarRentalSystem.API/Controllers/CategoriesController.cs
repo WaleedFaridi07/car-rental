@@ -1,4 +1,4 @@
-using CarRentalSystem.Domain.Interfaces;
+using CarRentalSystem.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalSystem.API.Controllers;

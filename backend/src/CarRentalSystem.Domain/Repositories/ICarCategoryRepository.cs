@@ -1,6 +1,6 @@
 using CarRentalSystem.Domain.Entities;
 
-namespace CarRentalSystem.Domain.Interfaces;
+namespace CarRentalSystem.Domain.Repositories;
 
 public interface ICarCategoryRepository
 {

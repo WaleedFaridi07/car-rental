@@ -1,12 +1,13 @@
-using CarRentalSystem.Application.DTOs;
 using CarRentalSystem.Application.Services;
+using CarRentalSystem.Domain.Dtos;
+using CarRentalSystem.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RentalsController(RentalService rentalService) : ControllerBase
+public class RentalsController(IRentalService rentalService) : ControllerBase
 {
     [HttpPost("pickup")]
     public async Task<IActionResult> RegisterPickup([FromBody] PickupRegistrationDto dto)
@@ -57,7 +58,7 @@ public class RentalsController(RentalService rentalService) : ControllerBase
     [HttpGet("generate-booking-number")]
     public IActionResult GenerateBookingNumber()
     {
-        var bookingNumber = RentalService.GenerateBookingNumber();
+        var bookingNumber = rentalService.GenerateBookingNumber();
         return Ok(new { bookingNumber });
     }
 }

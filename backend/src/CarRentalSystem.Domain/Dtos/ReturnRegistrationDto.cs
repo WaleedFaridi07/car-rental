@@ -1,4 +1,4 @@
-namespace CarRentalSystem.Application.DTOs;
+namespace CarRentalSystem.Domain.Dtos;
 
 public class ReturnRegistrationDto
 {

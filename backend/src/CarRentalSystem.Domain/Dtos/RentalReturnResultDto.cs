@@ -1,6 +1,6 @@
-namespace CarRentalSystem.Application.DTOs;
+namespace CarRentalSystem.Domain.Dtos;
 
-public class RentalReturnResult
+public class RentalReturnResultDto
 {
     public string BookingNumber { get; set; } = string.Empty;
     public int DaysRented { get; set; }

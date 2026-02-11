@@ -1,5 +1,5 @@
 using CarRentalSystem.Application.Services;
-using CarRentalSystem.Infrastructure.Data;
+using CarRentalSystem.Infrastructure;
 using CarRentalSystem.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;

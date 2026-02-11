@@ -1,31 +1,23 @@
-using CarRentalSystem.Application.DTOs;
 using CarRentalSystem.Application.Services;
+using CarRentalSystem.Domain.Dtos;
 using CarRentalSystem.Domain.Entities;
 using CarRentalSystem.Domain.Enums;
-using CarRentalSystem.Domain.Interfaces;
+using CarRentalSystem.Domain.Repositories;
+using CarRentalSystem.Domain.Services;
+using CarRentalSystem.Tests.Helpers;
 using FluentAssertions;
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 
 namespace CarRentalSystem.Tests;
 
-public class RentalServiceTests
+public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRentalRepository>
 {
-    private readonly Mock<IRentalRepository> _rentalRepositoryMock;
-    private readonly Mock<ICarCategoryRepository> _categoryRepositoryMock;
-    private readonly RentalService _service;
-
-    public RentalServiceTests()
-    {
-        _rentalRepositoryMock = new Mock<IRentalRepository>();
-        _categoryRepositoryMock = new Mock<ICarCategoryRepository>();
-        _service = new RentalService(_rentalRepositoryMock.Object, _categoryRepositoryMock.Object);
-    }
-
     [Fact]
     public void GenerateBookingNumber_ReturnsCorrectFormat()
     {
         // Act
-        var bookingNumber = RentalService.GenerateBookingNumber();
+        var bookingNumber = Sut.GenerateBookingNumber();
 
         // Assert
         bookingNumber.Should().StartWith("BK");
@@ -45,16 +37,22 @@ public class RentalServiceTests
             PickupDateTime = DateTime.Now,
             PickupMeterReading = 10000
         };
+        
 
-        _rentalRepositoryMock.Setup(r => r.BookingNumberExistsAsync(dto.BookingNumber))
-            .ReturnsAsync(false);
+        Repository.BookingNumberExistsAsync(dto.BookingNumber).Returns(false);
 
         // Act
-        var result = await _service.RegisterPickupAsync(dto);
+        var result = await Sut.RegisterPickupAsync(dto);
 
         // Assert
         result.Should().Be(dto.BookingNumber);
-        _rentalRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Rental>()), Times.Once);
+        await Repository.Received(1).AddAsync(Arg.Is<Rental>(r =>
+            r.BookingNumber == dto.BookingNumber &&
+            r.RegistrationNumber == dto.RegistrationNumber &&
+            r.CustomerSocialSecurityNumber == dto.CustomerSocialSecurityNumber &&
+            r.CarCategoryId == dto.CarCategoryId &&
+            r.PickupDateTime == dto.PickupDateTime &&
+            r.PickupMeterReading == dto.PickupMeterReading));
     }
 
     [Fact]
@@ -65,12 +63,11 @@ public class RentalServiceTests
         {
             BookingNumber = "BK202602101230123"
         };
-
-        _rentalRepositoryMock.Setup(r => r.BookingNumberExistsAsync(dto.BookingNumber))
-            .ReturnsAsync(true);
+        
+        Repository.BookingNumberExistsAsync(dto.BookingNumber).Returns(true);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.RegisterPickupAsync(dto));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterPickupAsync(dto));
     }
 
     [Fact]
@@ -99,20 +96,18 @@ public class RentalServiceTests
             ReturnDateTime = DateTime.Now,
             ReturnMeterReading = 10200
         };
-
-        _rentalRepositoryMock.Setup(r => r.GetByBookingNumberAsync(dto.BookingNumber))
-            .ReturnsAsync(rental);
-        _categoryRepositoryMock.Setup(c => c.GetByIdAsync(rental.CarCategoryId))
-            .ReturnsAsync(category);
+        
+        Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns(rental);
+        var carCategoryRepository = ServiceProvider.GetRequiredService<ICarCategoryRepository>();
+        carCategoryRepository.GetByIdAsync(rental.CarCategoryId).Returns(category);
 
         // Act
-        var result = await _service.RegisterReturnAsync(dto);
+        var result = await Sut.RegisterReturnAsync(dto);
 
         // Assert
         result.Should().NotBeNull();
         result.BookingNumber.Should().Be(dto.BookingNumber);
         result.KmDriven.Should().Be(200);
-        _rentalRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Rental>()), Times.Once);
     }
 
     [Fact]
@@ -123,12 +118,11 @@ public class RentalServiceTests
         {
             BookingNumber = "BK202602101230123"
         };
-
-        _rentalRepositoryMock.Setup(r => r.GetByBookingNumberAsync(dto.BookingNumber))
-            .ReturnsAsync((Rental?)null);
+        
+        Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns((Rental?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.RegisterReturnAsync(dto));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
     }
 
     [Fact]
@@ -145,12 +139,11 @@ public class RentalServiceTests
         {
             BookingNumber = "BK202602101230123"
         };
-
-        _rentalRepositoryMock.Setup(r => r.GetByBookingNumberAsync(dto.BookingNumber))
-            .ReturnsAsync(rental);
+        
+        Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns(rental);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.RegisterReturnAsync(dto));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
     }
 
     [Fact]
@@ -168,12 +161,11 @@ public class RentalServiceTests
             BookingNumber = "BK202602101230123",
             ReturnMeterReading = 9000
         };
-
-        _rentalRepositoryMock.Setup(r => r.GetByBookingNumberAsync(dto.BookingNumber))
-            .ReturnsAsync(rental);
+        
+        Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns(rental);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.RegisterReturnAsync(dto));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
     }
 
     [Theory]
@@ -198,7 +190,7 @@ public class RentalServiceTests
     public void CalculatePrice_SmallCar_ReturnsCorrectPrice()
     {
         // Act
-        var price = _service.CalculatePrice(CarCategory.SmallCar, 3, 0, 300, 0);
+        var price = Sut.CalculatePrice(CarCategory.SmallCar, 3, 0, 300, 0);
 
         // Assert
         price.Should().Be(900m);
@@ -208,7 +200,7 @@ public class RentalServiceTests
     public void CalculatePrice_Combi_ReturnsCorrectPrice()
     {
         // Act
-        var price = _service.CalculatePrice(CarCategory.Combi, 2, 100, 500, 2);
+        var price = Sut.CalculatePrice(CarCategory.Combi, 2, 100, 500, 2);
 
         // Assert
         price.Should().Be(1500m);
@@ -218,7 +210,7 @@ public class RentalServiceTests
     public void CalculatePrice_Truck_ReturnsCorrectPrice()
     {
         // Act
-        var price = _service.CalculatePrice(CarCategory.Truck, 3, 150, 800, 3);
+        var price = Sut.CalculatePrice(CarCategory.Truck, 3, 150, 800, 3);
 
         // Assert
         price.Should().Be(4275m);

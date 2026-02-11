@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bogus;
-using CarRentalSystem.Application.DTOs;
+using CarRentalSystem.Domain.Dtos;
 using CarRentalSystem.Domain.Entities;
 using CarRentalSystem.IntegrationTests.Helpers;
 

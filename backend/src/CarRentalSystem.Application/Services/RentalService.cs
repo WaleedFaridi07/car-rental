@@ -1,14 +1,16 @@
-using CarRentalSystem.Application.DTOs;
 using CarRentalSystem.Application.Strategies;
+using CarRentalSystem.Domain.Dtos;
 using CarRentalSystem.Domain.Entities;
 using CarRentalSystem.Domain.Enums;
-using CarRentalSystem.Domain.Interfaces;
+using CarRentalSystem.Domain.Repositories;
+using CarRentalSystem.Domain.Services;
+using CarRentalSystem.Domain.Strategies;
 
 namespace CarRentalSystem.Application.Services;
 
 public class RentalService(
     IRentalRepository rentalRepository,
-    ICarCategoryRepository categoryRepository)
+    ICarCategoryRepository categoryRepository) : IRentalService
 {
     private readonly Dictionary<CarCategory, IPricingStrategy> _pricingStrategies = new()
     {
@@ -17,7 +19,7 @@ public class RentalService(
         { CarCategory.Truck, new TruckPricingStrategy() }
     };
 
-    public static string GenerateBookingNumber()
+    public string GenerateBookingNumber()
     {
         var now = DateTime.Now;
         var datePart = now.ToString("yyyyMMdd");
@@ -47,7 +49,7 @@ public class RentalService(
         return rental.BookingNumber;
     }
 
-    public async Task<RentalReturnResult> RegisterReturnAsync(ReturnRegistrationDto dto)
+    public async Task<RentalReturnResultDto> RegisterReturnAsync(ReturnRegistrationDto dto)
     {
         var rental = await rentalRepository.GetByBookingNumberAsync(dto.BookingNumber);
         if (rental == null)
@@ -81,7 +83,7 @@ public class RentalService(
 
         await rentalRepository.UpdateAsync(rental);
 
-        return new RentalReturnResult
+        return new RentalReturnResultDto
         {
             BookingNumber = rental.BookingNumber,
             DaysRented = days,
