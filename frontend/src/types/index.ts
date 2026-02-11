@@ -39,3 +39,10 @@ export interface RentalReturnResult {
   kmDriven: number
   totalPrice: number
 }
+
+export interface FluentResult<T> {
+  isSuccess: boolean
+  value?: T
+  errors?: string[]
+}
+

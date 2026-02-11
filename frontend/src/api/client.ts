@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { CarCategory, Rental, PickupRegistrationDto, ReturnRegistrationDto, RentalReturnResult } from '../types'
+import type { CarCategory, Rental, PickupRegistrationDto, ReturnRegistrationDto, RentalReturnResult, FluentResult } from '../types'
 
 const api = axios.create({
   baseURL: 'http://localhost:5225/api',
@@ -15,13 +15,19 @@ export const rentalApi = {
   },
 
   registerPickup: async (dto: PickupRegistrationDto): Promise<string> => {
-    const { data } = await api.post<string>('/rentals/pickup', dto)
-    return data;
+    const { data } = await api.post<FluentResult<string>>('/rentals/pickup', dto)
+    if (!data.isSuccess || !data.value) {
+      throw new Error(data.errors?.join(', ') || 'Failed to register pickup')
+    }
+    return data.value
   },
 
   registerReturn: async (dto: ReturnRegistrationDto): Promise<RentalReturnResult> => {
-    const { data } = await api.post<RentalReturnResult>('/rentals/return', dto)
-    return data
+    const { data } = await api.post<FluentResult<RentalReturnResult>>('/rentals/return', dto)
+    if (!data.isSuccess || !data.value) {
+      throw new Error(data.errors?.join(', ') || 'Failed to register return')
+    }
+    return data.value
   },
 
   getAllRentals: async (): Promise<Rental[]> => {

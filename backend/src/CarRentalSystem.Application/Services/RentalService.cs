@@ -5,6 +5,7 @@ using CarRentalSystem.Domain.Enums;
 using CarRentalSystem.Domain.Repositories;
 using CarRentalSystem.Domain.Services;
 using CarRentalSystem.Domain.Strategies;
+using FluentResults;
 
 namespace CarRentalSystem.Application.Services;
 
@@ -28,11 +29,11 @@ public class RentalService(
         return $"BK{datePart}{timePart}{random}";
     }
 
-    public async Task<string> RegisterPickupAsync(PickupRegistrationDto dto)
+    public async Task<Result<string>> RegisterPickupAsync(PickupRegistrationDto dto)
     {
         if (await rentalRepository.BookingNumberExistsAsync(dto.BookingNumber))
         {
-            throw new InvalidOperationException("Booking number already exists");
+            return Result.Fail<string>("Booking number already exists");
         }
 
         var rental = new Rental
@@ -46,31 +47,31 @@ public class RentalService(
         };
 
         await rentalRepository.AddAsync(rental);
-        return rental.BookingNumber;
+        return Result.Ok(rental.BookingNumber);
     }
 
-    public async Task<RentalReturnResultDto> RegisterReturnAsync(ReturnRegistrationDto dto)
+    public async Task<Result<RentalReturnResultDto>> RegisterReturnAsync(ReturnRegistrationDto dto)
     {
         var rental = await rentalRepository.GetByBookingNumberAsync(dto.BookingNumber);
         if (rental == null)
         {
-            throw new InvalidOperationException("Rental not found");
+            return Result.Fail<RentalReturnResultDto>("Rental not found");
         }
 
         if (rental.ReturnDateTime.HasValue)
         {
-            throw new InvalidOperationException("Rental already returned");
+            return Result.Fail<RentalReturnResultDto>("Rental already returned");
         }
 
         if (dto.ReturnMeterReading < rental.PickupMeterReading)
         {
-            throw new InvalidOperationException("Return meter reading cannot be less than pickup meter reading");
+            return Result.Fail<RentalReturnResultDto>("Return meter reading cannot be less than pickup meter reading");
         }
 
         var category = await categoryRepository.GetByIdAsync(rental.CarCategoryId);
         if (category == null)
         {
-            throw new InvalidOperationException("Car category not found");
+            return Result.Fail<RentalReturnResultDto>("Car category not found");
         }
 
         var days = CalculateDays(rental.PickupDateTime, dto.ReturnDateTime);
@@ -83,13 +84,13 @@ public class RentalService(
 
         await rentalRepository.UpdateAsync(rental);
 
-        return new RentalReturnResultDto
+        return Result.Ok(new RentalReturnResultDto
         {
             BookingNumber = rental.BookingNumber,
             DaysRented = days,
             KmDriven = km,
             TotalPrice = price
-        };
+        });
     }
 
     public async Task<IEnumerable<Rental>> GetAllRentalsAsync()

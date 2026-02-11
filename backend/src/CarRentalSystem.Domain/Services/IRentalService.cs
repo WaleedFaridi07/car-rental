@@ -1,13 +1,14 @@
 using CarRentalSystem.Domain.Dtos;
 using CarRentalSystem.Domain.Entities;
 using CarRentalSystem.Domain.Enums;
+using FluentResults;
 
 namespace CarRentalSystem.Domain.Services;
 
 public interface IRentalService
 {
-    Task<string> RegisterPickupAsync(PickupRegistrationDto dto);
-    Task<RentalReturnResultDto> RegisterReturnAsync(ReturnRegistrationDto dto);
+    Task<Result<string>> RegisterPickupAsync(PickupRegistrationDto dto);
+    Task<Result<RentalReturnResultDto>> RegisterReturnAsync(ReturnRegistrationDto dto);
     Task<IEnumerable<Rental>> GetAllRentalsAsync();
     Task<Rental?> GetRentalByBookingNumberAsync(string bookingNumber);
     string GenerateBookingNumber();

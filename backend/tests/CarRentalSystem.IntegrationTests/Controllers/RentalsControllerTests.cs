@@ -35,7 +35,9 @@ public class RentalsControllerTests(CarRentalSystemApiFactory factory) : IClassF
         // Arrange
         var request = _bookingFaker.Generate();
         var response = await _client.PostAsJsonAsync("/api/rentals/pickup", request);
-        var bookingNumber = (await response.Content.ReadAsStringAsync()).Trim('"');
+        var json = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(json);
+        var bookingNumber = doc.RootElement.GetProperty("value").GetString();
 
         // Assert
         Assert.Equal(request.BookingNumber, bookingNumber);

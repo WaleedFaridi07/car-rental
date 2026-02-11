@@ -45,7 +45,7 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
         var result = await Sut.RegisterPickupAsync(dto);
 
         // Assert
-        result.Should().Be(dto.BookingNumber);
+        result.Value.Should().Be(dto.BookingNumber);
         await Repository.Received(1).AddAsync(Arg.Is<Rental>(r =>
             r.BookingNumber == dto.BookingNumber &&
             r.RegistrationNumber == dto.RegistrationNumber &&
@@ -67,7 +67,9 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
         Repository.BookingNumberExistsAsync(dto.BookingNumber).Returns(true);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterPickupAsync(dto));
+        var result = await Sut.RegisterPickupAsync(dto);
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Booking number already exists");
     }
 
     [Fact]
@@ -106,8 +108,8 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
 
         // Assert
         result.Should().NotBeNull();
-        result.BookingNumber.Should().Be(dto.BookingNumber);
-        result.KmDriven.Should().Be(200);
+        result.Value.BookingNumber.Should().Be(dto.BookingNumber);
+        result.Value.KmDriven.Should().Be(200);
     }
 
     [Fact]
@@ -122,7 +124,9 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
         Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns((Rental?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
+        var result = await Sut.RegisterReturnAsync(dto);
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Rental not found");
     }
 
     [Fact]
@@ -143,7 +147,9 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
         Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns(rental);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
+        var result = await Sut.RegisterReturnAsync(dto);
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Rental already returned");
     }
 
     [Fact]
@@ -165,7 +171,9 @@ public class RentalServiceTests : BaseTest<IRentalService, RentalService, IRenta
         Repository.GetByBookingNumberAsync(dto.BookingNumber).Returns(rental);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.RegisterReturnAsync(dto));
+        var result = await Sut.RegisterReturnAsync(dto);
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Return meter reading cannot be less than pickup meter reading");
     }
 
     [Theory]
